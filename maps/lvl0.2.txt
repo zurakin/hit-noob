@@ -1,0 +1,20 @@
+0 : 4 : 1 : media/box1.png
+1 : 4 : 1 : media/box1.png
+0 : 5 : 1 : media/box1.png
+1 : 4 : 1 : media/box1.png
+2 : 0 : 1 : media/box1.png
+3 : 2 : 1 : media/box1.png
+3 : 4 : 1 : media/box1.png
+3 : 5 : 1 : media/box1.png
+3 : 6 : 1 : media/box1.png
+4 : 2 : 1 : media/box1.png
+5 : 2 : 1 : media/box1.png
+7 : 9 : 1 : media/box1.png
+8 : 4 : 1 : media/box1.png
+8 : 5 : 2 : media/bug.png
+6 : 4 : 2 : media/bug.png
+9 :4 : 2 : media/bug.png
+8 : 3 : 2 : media/bug.png
+4 : 4 : 2 : media/bug.png
+5 : 4 : 2 : media/bug.png
+5 : 5 : 0 : media/ninja.png

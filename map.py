@@ -18,12 +18,15 @@ class Bug():
         self.load = Image.open(image_file)
         self.image = ImageTk.PhotoImage(image = self.load)
         self.position = position
+        self.direction = [random.randint(-1,1), random.randint(-1,1)]
 
     def display(self, window):
         self.osd = window.canvas.create_image(self.position[0]*64, self.position[1]*64, image = self.image, anchor = 'nw')
     def move(self, obstacles = None):
-        self.position[0] += random.randint(-1,1) * self.speed /64
-        self.position[1] += random.randint(-1,1) * self.speed /64
+        self.position[0] += self.direction[0] * self.speed /64
+        self.position[1] += self.direction[1] * self.speed /64
+    def redirect(self):
+        self.direction = [random.randint(-1,1), random.randint(-1,1)]
 
 class Player():
     def __init__(self, position, image_file = 'media/ninja.png', hp = 200, attack = 100, speed = 8):

@@ -1,4 +1,4 @@
-import tkinter, map, multiprocessing, time, media_creator, sys, keyboard
+import tkinter, map, multiprocessing, time, media_creator, sys, keyboard, random
 from PIL import ImageTk, Image
 
 
@@ -72,6 +72,8 @@ class Window():
         while self.running:
             self.check_movement()
             for bug in self.bugs:
+                if random.randint(0,4) == 0:
+                    bug.redirect()
                 bug.move()
                 self.canvas.delete(bug.osd)
                 bug.display(self)
