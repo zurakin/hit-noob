@@ -1,5 +1,6 @@
-import tkinter, map, multiprocessing, time, media_creator
+import tkinter, map, multiprocessing, time, media_creator, sys, keyboard
 from PIL import ImageTk, Image
+
 
 
 class Window():
@@ -11,6 +12,29 @@ class Window():
         self.root.geometry('{}x{}'.format( str(geometry[0]*64) , str(geometry[1]*64) ) )
         self.canvas = tkinter.Canvas(self.root, bg = 'blue')
         self.canvas.pack(expand = 'yes', fill = 'both')
+        self.running = True
+        self.add_keybinds()
+        self.add_objects()
+
+    def stop(self, *args):
+        self.running = False
+
+    def add_keybinds(self):
+        self.root.bind('q', self.stop)
+        # self.root.bind('<Up>', lambda *args : self.player.move((0,-1)))
+        # self.root.bind('<Down>', lambda *args : self.player.move((0,1)))
+        # self.root.bind('<Right>', lambda *args : self.player.move((1,0)))
+        # self.root.bind('<Left>', lambda *args : self.player.move((-1,0)))
+    def check_movement(self):
+        if keyboard.is_pressed('up'):
+            self.player.move((0, -1))
+        if keyboard.is_pressed('down'):
+            self.player.move((0, 1))
+        if keyboard.is_pressed('right'):
+            self.player.move((1, 0))
+        if keyboard.is_pressed('left'):
+            self.player.move((-1, 0))
+    def add_objects(self):
         self.obstacles = []
         self.bugs = []
         self.player = None
@@ -29,14 +53,14 @@ class Window():
         for line in lines :
             if line[2].strip() == '1':
                 self.obstacles.append(map.Block(image_file = line[3].strip(),
-                 position = (int(line[0]), int(line[1]))))
+                 position = [int(line[0]), int(line[1])]))
 
             if line[2].strip() == '2':
                 self.bugs.append(map.Bug(image_file = line[3].strip(),
-                 position = (int(line[0]), int(line[1]))))
+                 position = [int(line[0]), int(line[1])]))
             if line[2].strip() == '0':
-                self.player = map.Block(image_file = line[3].strip(),
-                 position = (int(line[0]), int(line[1])))
+                self.player = map.Player(image_file = line[3].strip(),
+                 position = [int(line[0]), int(line[1])])
     def display_map(self):
         for obstacle in self.obstacles:
             obstacle.display(self)
@@ -45,11 +69,15 @@ class Window():
         self.player.display(self)
 
     def run(self, refresh_rate = 30):
-        while True:
-            for bug in bugs:
+        while self.running:
+            self.check_movement()
+            for bug in self.bugs:
+                bug.move()
                 self.canvas.delete(bug.osd)
                 bug.display(self)
 
-            self.canvas.delete(player.osd)
+            self.canvas.delete(self.player.osd)
             self.player.display(self)
-            time.sleep(1/30)
+            time.sleep(1/refresh_rate)
+            self.root.update()
+        self.root.destroy()

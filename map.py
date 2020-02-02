@@ -1,4 +1,4 @@
-import numpy
+import numpy, random
 from PIL import ImageTk, Image
 
 class Block():
@@ -21,6 +21,9 @@ class Bug():
 
     def display(self, window):
         self.osd = window.canvas.create_image(self.position[0]*64, self.position[1]*64, image = self.image, anchor = 'nw')
+    def move(self, obstacles = None):
+        self.position[0] += random.randint(-1,1) * self.speed /64
+        self.position[1] += random.randint(-1,1) * self.speed /64
 
 class Player():
     def __init__(self, position, image_file = 'media/ninja.png', hp = 200, attack = 100, speed = 8):
@@ -32,5 +35,5 @@ class Player():
     def display(self, window):
         self.osd = window.canvas.create_image(self.position[0]*64, self.position[1]*64, image = self.image, anchor = 'nw')
     def move(self, coordinates):
-        self.position[0] += coordinates[0]
-        self.position[1] += coordinates[1]
+        self.position[0] += coordinates[0] * self.speed /64
+        self.position[1] += coordinates[1] * self.speed /64
