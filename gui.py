@@ -1,6 +1,6 @@
-import tkinter, map, multiprocessing, time, media_creator, sys, keyboard, random
+import tkinter, objects, multiprocessing, time, media_creator, sys, keyboard, random
 from PIL import ImageTk, Image
-
+from math import pi
 
 
 class Window():
@@ -27,13 +27,13 @@ class Window():
         # self.root.bind('<Left>', lambda *args : self.player.move((-1,0)))
     def check_movement(self):
         if keyboard.is_pressed('up'):
-            self.player.move((0, -1))
+            self.player.move(-1, self)
         if keyboard.is_pressed('down'):
-            self.player.move((0, 1))
+            self.player.move(1, self)
         if keyboard.is_pressed('right'):
-            self.player.move((1, 0))
+            self.player.rotate(-9)
         if keyboard.is_pressed('left'):
-            self.player.move((-1, 0))
+            self.player.rotate(9)
     def add_objects(self):
         self.obstacles = []
         self.bugs = []
@@ -52,15 +52,16 @@ class Window():
             lines = [line.strip().split(':') for line in lines]
         for line in lines :
             if line[2].strip() == '1':
-                self.obstacles.append(map.Block(image_file = line[3].strip(),
-                 position = [int(line[0]), int(line[1])]))
+                self.obstacles.append(objects.Block(
+                image_file = line[3].strip(),
+                 position = [int(line[0]) * 64, int(line[1]) * 64]))
 
             if line[2].strip() == '2':
-                self.bugs.append(map.Bug(image_file = line[3].strip(),
-                 position = [int(line[0]), int(line[1])]))
+                self.bugs.append(objects.Bug(image_file = line[3].strip(),
+                 position = [int(line[0]) * 64, int(line[1]) * 64]))
             if line[2].strip() == '0':
-                self.player = map.Player(image_file = line[3].strip(),
-                 position = [int(line[0]), int(line[1])])
+                self.player = objects.Player(image_file = line[3].strip(),
+                 position = [int(line[0]) * 64, int(line[1]) * 64])
     def display_map(self):
         for obstacle in self.obstacles:
             obstacle.display(self)
@@ -72,12 +73,11 @@ class Window():
         while self.running:
             self.check_movement()
             for bug in self.bugs:
-                if random.randint(0,4) == 0:
-                    bug.redirect()
-                bug.move()
+                if  bug.state != 3 and bug.position[0] %64 == 0 and bug.position[1] %64 == 0 and random.choices([True, False], [0.25, 0.75])[0]:
+                    bug.rotate()
+                bug.move(self)
                 self.canvas.delete(bug.osd)
                 bug.display(self)
-
             self.canvas.delete(self.player.osd)
             self.player.display(self)
             time.sleep(1/refresh_rate)

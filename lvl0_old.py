@@ -1,6 +1,6 @@
 
 if __name__ == '__main__':
-    import gui, map, multiprocessing, temp
+    import gui, objects, multiprocessing, temp
     # def foo():
     #     global root
     #     root.run(30)

@@ -1,4 +1,4 @@
-import gui, map, settings
+import gui, objects, settings
 
 
 root = gui.Window(title = 'level 0')

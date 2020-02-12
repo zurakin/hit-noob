@@ -1,4 +1,4 @@
-import gui, map, settings
+import gui, settings
 
 
 root = gui.Window(title = 'level 0',geometry = (20,11))
