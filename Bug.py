@@ -1,42 +1,39 @@
 import numpy, random
 from PIL import ImageTk, Image
-from math import cos, sin, pi
-
-class Block():
-    def __init__(self, position, image_file = 'media/box1.png'):
-        self.load = Image.open(image_file)
-        self.image = ImageTk.PhotoImage(image = self.load)
-        self.position = position
-
-    def display(self, window):
-        self.osd = window.canvas.create_image(self.position[0],
-         self.position[1], image = self.image, anchor = 'nw')
-
+from math import cos, sin, pi, acos, sqrt
 
 class Bug():
     def __init__(self, position, image_file = 'media/bug.png', hp = 100, speed = 4):
         self.hp = hp
         self.speed = speed
         self.rotating_speed = 6
-        self.alpha = 0
+        self.alpha = 90
+        self.beta = 0
         self.target_alpha = 0
-        self.state = 0 #0 for normal mode, 1 for chasing mode, 2 for cuatious mode, 3 for rotating mode
+        self.view_distance = 192
+        self.fov = 90
+        self.rotating = False
+        self.endangered = False
         self.load = Image.open(image_file)
+        self.load2 = Image.open('media/endangered_bug.png')
         self.position = position
         self.sleep = 0
 
     def display(self, window):
-        self.image = ImageTk.PhotoImage(image = self.load.rotate(self.alpha))
+        if self.endangered:
+            self.image = ImageTk.PhotoImage(image = self.load2.rotate(self.alpha))
+        else:
+            self.image = ImageTk.PhotoImage(image = self.load.rotate(self.alpha))
         self.osd = window.canvas.create_image(self.position[0],
         self.position[1], image = self.image, anchor = 'nw')
     def move(self, window):
-        if self.state == 3:
-            if self.position[0] % 64 != 0:
-                print('x:', self.position[0])
-            if self.position[1] % 64 != 0:
-                print('y:', self.position[1])
+        if self.rotating:
+            # if self.position[0] % 64 != 0:
+            #     print('x:', self.position[0])
+            # if self.position[1] % 64 != 0:
+            #     print('y:', self.position[1])
             if self.alpha ==self.target_alpha:
-                self.state = 0
+                self.rotating = False
             elif 0<self.target_alpha - self.alpha <180 :
                 self.alpha += self.rotating_speed
                 self.alpha = self.alpha%360
@@ -44,7 +41,7 @@ class Bug():
                 self.alpha -= self.rotating_speed
                 self.alpha = self.alpha%360
 
-        elif self.state == 0:
+        elif not self.rotating:
             if self.check_collision(window):
                 pass
             else:
@@ -66,31 +63,31 @@ class Bug():
                     self.rotate()
                 else :
                     self.position[1] = newy
+
+    def check_danger(self, window):
+        x, y = self.position[0]+32, self.position[1]+32
+        xp, yp = window.player.position[0]+32, window.player.position[1]+32
+        n2 = sqrt((xp-x)**2 + (y-yp)**2)
+        if n2 > self.view_distance:
+            self.endangered = False
+            return
+        angle = (self.alpha+90)%360
+        pscal = (cos(angle*pi/180)*(xp-x)) + (+sin(angle*pi/180)*(y-yp))
+        if n2== 0 :
+            pass
+        else:
+            self.beta = acos(pscal/n2)*180/pi
+        if self.beta < self.fov/2:
+            self.endangered = True
+        else:
+            self.endangered = False
+        
     def rotate(self):
-        self.state = 3
+        self.rotating = True
         self.target_alpha = self.alpha + random.choices((90, -90, 180),(0.45, 0.45, 0.1))[0]
         self.target_alpha = self.target_alpha%(360)
     def check_collision(self, window):
         for block in window.obstacles:
-            # if block.position[0] - 64 < self.position[0] < block.position[0]:
-            #     if self.position[1] == block.position[1] - 64:
-            #         self.position[0] = block.position[0] - 64
-            #         self.rotate()
-            #         return True
-            #     if self.position[1] == block.position[1]):
-            #         self.position[0] == block.position[1] - 64
-            #         self.rotate()
-            #         return True
-            #
-            # if block.position[0] < self.position[0] < block.position[0] + 64:
-            #     if self.position[1] == block.position[1]:
-            #         self.position[0] = block.position[0]
-            #         self.rotate()
-            #         return True
-            #     if self.position[1] == block.position[1]):
-            #         self.position[0] == block.position[1] - 64
-            #         self.rotate()
-            #         return True
             if block.position[0]-64<self.position[0]<block.position[0] and self.position[1] == block.position[1]:
                 self.position[0] = block.position[0]-64
                 self.rotate()
@@ -107,20 +104,3 @@ class Bug():
                 self.position[1] = block.position[1] + 64
                 self.rotate()
                 return True
-
-class Player():
-    def __init__(self, position, image_file = 'media/ninja.png', hp = 200, attack = 100, speed = 8):
-        self.hp = hp
-        self.speed = speed
-        self.alpha = 0
-        self.load = Image.open(image_file).rotate(-90)
-        self.position = position
-    def display(self, window):
-        self.image = ImageTk.PhotoImage(image = self.load.rotate(self.alpha))
-        self.osd = window.canvas.create_image(self.position[0], self.position[1], image = self.image, anchor = 'nw')
-    def move(self, direction, window):
-        self.position[0] += sin(self.alpha*pi/180)* direction * self.speed
-        self.position[1] += cos(self.alpha*pi/180)* direction * self.speed
-    def rotate(self, angle):
-        self.alpha += angle
-        self.alpha = self.alpha%(360)

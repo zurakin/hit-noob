@@ -1,7 +1,7 @@
-import gui, objects, settings
+import game, settings
 
 
-root = gui.Window(title = 'level 0')
+root = game.Game(title = 'level 0')
 map_file = 'maps/lvl0.txt'
 root.load_map(map_file)
 root.display_map()

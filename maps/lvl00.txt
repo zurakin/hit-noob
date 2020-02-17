@@ -1,0 +1,2 @@
+3 : 3 : 2 : media/bug.png
+4 : 4 : 0 : media/ninja.png
