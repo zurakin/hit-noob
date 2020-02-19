@@ -16,16 +16,28 @@ class Bug():
         self.endangered = False
         self.load = Image.open(image_file)
         self.load2 = Image.open('media/endangered_bug.png')
+        self.loadfov = Image.open('media/fov.png')
         self.position = position
         self.sleep = 0
 
     def display(self, window):
         if self.endangered:
             self.image = ImageTk.PhotoImage(image = self.load2.rotate(self.alpha))
+            self.imagefov = ImageTk.PhotoImage(image = self.loadfov.rotate(self.alpha+ 90))
         else:
             self.image = ImageTk.PhotoImage(image = self.load.rotate(self.alpha))
+            self.imagefov = ImageTk.PhotoImage(image = self.loadfov.rotate(self.alpha+ 90))
+
         self.osd = window.canvas.create_image(self.position[0],
         self.position[1], image = self.image, anchor = 'nw')
+        #
+        O = (self.position[0] + 32, self.position[1]+32)
+        radalpha = self.alpha*pi/180
+        A = [O[0]+128*cos(radalpha+ pi/2), O[1]-128*sin(radalpha+pi/2)]
+        #
+        self.osdfov = window.canvas.create_image(A[0],
+        A[1], image = self.imagefov, anchor = 'center')
+
     def move(self, window):
         if self.rotating:
             # if self.position[0] % 64 != 0:
@@ -81,7 +93,7 @@ class Bug():
             self.endangered = True
         else:
             self.endangered = False
-        
+
     def rotate(self):
         self.rotating = True
         self.target_alpha = self.alpha + random.choices((90, -90, 180),(0.45, 0.45, 0.1))[0]
