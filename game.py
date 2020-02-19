@@ -28,12 +28,16 @@ class Game():
     def check_movement(self):
         if keyboard.is_pressed('up'):
             self.player.move(-1, self)
+            if keyboard.is_pressed('right'):
+                self.player.rotate(-9)
+            if keyboard.is_pressed('left'):
+                self.player.rotate(9)
         if keyboard.is_pressed('down'):
             self.player.move(1, self)
-        if keyboard.is_pressed('right'):
-            self.player.rotate(-9)
-        if keyboard.is_pressed('left'):
-            self.player.rotate(9)
+            if keyboard.is_pressed('right'):
+                self.player.rotate(-9)
+            if keyboard.is_pressed('left'):
+                self.player.rotate(9)
     def add_objects(self):
         self.obstacles = []
         self.bugs = []
